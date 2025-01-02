@@ -10,12 +10,17 @@ const LexiconButton = dynamic(
 );
 
 export default function ChatWidget() {
-  const searchParams = useSearchParams();
-  const configId = searchParams?.get('configId') || 'default';
-  
-  return (
-    <div className="bg-transparent">
-      <LexiconButton configId={configId} />
-    </div>
-  );
+  try{
+    const searchParams = useSearchParams();
+    const configId = searchParams?.get('configId') || 'default';
+    return (
+      <div className="bg-transparent">
+        <LexiconButton configId={configId} />
+      </div>
+    );
+
+  }catch(e){
+    console.error(e);
+  }
+  return null;
 }

@@ -165,7 +165,7 @@ interface SwapTransaction {
 interface SwapResponse {
     data: SwapTransaction[]
 }
-
+// @ts-ignore
 const allTxBuf: Buffer[] = (swapTransactions as SwapTransactionsResponse).data.map((tx: SwapTransaction) => Buffer.from(tx.transaction, 'base64'))
   const allTransactions = allTxBuf.map((txBuf) => VersionedTransaction.deserialize(txBuf))
 
