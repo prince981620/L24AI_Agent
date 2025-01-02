@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DemoSwap - Decentralized Exchange</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #000000;
+            color: #000000;
+        }
+        .container {
+            max-width: 460px;
+            margin: 40px auto;
+            padding: 24px;
+            background: #1a1a1a;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(255,255,255,0.06);
+        }
+        .swap-box {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        .token-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        .token-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #333333;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .token-selector img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+        input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            width: 150px;
+            text-align: right;
+        }
+        input:focus {
+            outline: none;
+        }
+        .swap-button {
+            background: #5D5FEF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .swap-button:hover {
+            background: #4A4CD0;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+        /* Add styles for iframe container */
+        #lexicon-widget-container {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            z-index: 999999;
+        }
+        
+        /* Add responsive breakpoint */
+        @media (max-width: 480px) {
+            #lexicon-widget-container {
+                bottom: 8px;
+                right: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mock Swap</h2>
+        <div class="swap-box">
+            <div class="token-input">
+                <div class="token-selector">
+                    <img src="https://cryptologos.cc/logos/solana-sol-logo.png" alt="SOL">
+                    <span>SOL</span>
+                </div>
+                <input type="number" placeholder="0.0">
+            </div>
+            <div class="token-input">
+                <div class="token-selector">
+                    <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC">
+                    <span>USDC</span>
+                </div>
+                <input type="number" placeholder="0.0">
+            </div>
+        </div>
+        
+        <div class="stats">
+            <span>Network Fee:</span>
+            <span>0.000005 SOL</span>
+        </div>
+        <div class="stats pb-4">
+            <span>Price Impact:</span>
+            <span>0.01%</span>
+        </div>
+ 
+        
+        <button class="swap-button">Please choose tokens and slippage</button>
+    </div>
+
+    <!-- Add container for widget -->
+    <div id="lexicon-widget-container" aria-live="polite"></div>
+    
+    <!-- Lexicon Chat Widget Embed Script -->
+    <script 
+        src="/lexicon-embed.js" 
+        data-config-id="default"
+        async
+        defer
+    ></script>
+</body>
+</html> 

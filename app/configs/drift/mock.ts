@@ -1,0 +1,1 @@
+//we will basically add the defs, systems prompt etc for each files and give config="drift" and lexicon will automatically use this
