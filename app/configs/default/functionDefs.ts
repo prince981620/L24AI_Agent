@@ -23,7 +23,7 @@ export const tools = [
   },
   {
     name: "sell_L24AI",
-    description: "sell L24AI using Radium Pool on Solana.",
+    description: "sell L24AI to get solana(SOL) using Radium Pool on Solana.",
     strict: true,
     parameters: {
       type: "object",
@@ -40,7 +40,7 @@ export const tools = [
   },
   {
     name: "buy_L24AI",
-    description: "buy L24AI using Radium Pool on Solana.",
+    description: "buy L24AI spending solana(SOL) using Radium Pool on Solana.",
     strict: true,
     parameters: {
       type: "object",
