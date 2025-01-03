@@ -9,7 +9,7 @@ export default function Home() {
       <div className="relative text-center space-y-8 pt-16 lg:pt-24 mb-12 px-4">
         <div className="flex justify-center animate-fade-in">
           <img
-            src="/lexicon/lexicon-logo.png"
+            src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
             alt="Lexicon"
             className="h-20 w-auto hover:scale-105 transition-transform duration-300"
           />
