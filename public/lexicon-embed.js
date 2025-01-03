@@ -42,7 +42,7 @@
     const script = document.currentScript;
     const configId = script?.getAttribute('data-config-id') || 'default';
     
-    iframe.src = `http://localhost:3001/chat-widget?configId=${configId}`;
+    iframe.src = `https://api.live24.fun/app2/chat-widget?configId=${configId}`;
     
     // Add container to DOM
     container.appendChild(iframe);
