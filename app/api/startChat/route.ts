@@ -3,10 +3,11 @@ import { startChat } from "./startChat";
 
 // Add origin validation
 const validateOrigin = (request: NextRequest) => {
+  return true;
+
   const origin = request.headers.get("origin");
   // Only allow requests from our own domain
-  const allowedOrigins = ["https://live24.fun/", "http://44.218.185.43/","https://api.live24.fun/","http://localhost:3000","*"];
-  return allowedOrigins.includes(origin || "");
+  const allowedOrigins = ["https://live24.fun/", "http://44.218.185.43/","https://api.live24.fun/","http://localhost:3001","https://api.live24.fun/app2/","*"];
 };
 
 export async function POST(req: NextRequest) {

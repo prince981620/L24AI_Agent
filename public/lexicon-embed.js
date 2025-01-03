@@ -22,7 +22,7 @@
     // Set iframe attributes with improved accessibility
     const iframeStyles = {
       width: '120px', 
-      height: '32px',
+      height: '40px',
       border: 'none',
       borderRadius: '8px',
       background: 'transparent',
@@ -42,7 +42,7 @@
     const script = document.currentScript;
     const configId = script?.getAttribute('data-config-id') || 'default';
     
-    iframe.src = `http://localhost:3000/chat-widget?configId=${configId}`;
+    iframe.src = `http://localhost:3001/chat-widget?configId=${configId}`;
     
     // Add container to DOM
     container.appendChild(iframe);
@@ -70,7 +70,7 @@
     // Improved resize handling with debouncing
     let resizeTimeout;
     window.addEventListener('message', (event) => {
-      if (event.origin !== 'http://localhost:3000') return;
+      if (event.origin !== 'http://localhost:3001') return;
       
       if (event.data.type === 'resize') {
         clearTimeout(resizeTimeout);

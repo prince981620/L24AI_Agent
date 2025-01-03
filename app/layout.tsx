@@ -16,9 +16,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-gradient-to-b from-[#f1f1f1] to-[#e8e8e8] overflow-x-hidden">
         {/* Background pattern */}
         <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#f5f5f5] via-transparent to-transparent opacity-50" />
-          {/* Subtle grid pattern */}
-          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(white,transparent_85%)] opacity-20" />
+   
         </div>
 
         {/* Gradient orbs - adjusted colors to match the theme */}
