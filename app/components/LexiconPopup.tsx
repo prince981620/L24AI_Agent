@@ -293,7 +293,7 @@ const LexiconPopup: React.FC<
             </span>
             <div className="flex items-center gap-1.5">
               <img
-                src="/lexicon/lexicon-logo-dark.png"
+                src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
                 alt="Lexicon"
                 className="w-3 h-3 rounded-full"
               />

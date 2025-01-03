@@ -70,6 +70,7 @@ const LexiconButton: React.FC<LexiconButtonProps> = ({
             focus:outline-none focus:ring-2 focus:ring-white/20
             ${buttonClassName}
           `}
+<<<<<<< Updated upstream
             aria-label="Open chat with Lexicon AI"
           >
          
@@ -80,6 +81,15 @@ const LexiconButton: React.FC<LexiconButtonProps> = ({
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
             configId={configId}
+=======
+          aria-label="Open chat with Lexicon AI"
+        >
+          <img
+            src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
+            alt=""
+            className="h-4 w-4 rounded-full"
+            aria-hidden="true"
+>>>>>>> Stashed changes
           />
         )}
       </div>

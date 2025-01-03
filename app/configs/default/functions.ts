@@ -50,18 +50,29 @@ interface SwapCompute {
   }
 }
 
+if (!process.env.NEXT_PUBLIC_HELIUS_API_KEY) {
+  throw new Error('Helius API key not found');
+}
+
+const url = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+
+const connection = new Connection(
+  url || clusterApiUrl("mainnet-beta"),
+  "confirmed"
+);
+
 export const fetchTokenAccountData = async (owner:PublicKey) => {
 
-  if (!process.env.NEXT_PUBLIC_HELIUS_API_KEY) {
-    throw new Error('Helius API key not found');
-  }
+  // if (!process.env.NEXT_PUBLIC_HELIUS_API_KEY) {
+  //   throw new Error('Helius API key not found');
+  // }
 
-  const url = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+  // const url = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
 
-  const connection = new Connection(
-    url || clusterApiUrl("mainnet-beta"),
-    "confirmed"
-  );
+  // const connection = new Connection(
+  //   url || clusterApiUrl("mainnet-beta"),
+  //   "confirmed"
+  // );
   const solAccountResp = await connection.getAccountInfo(owner)
   const tokenAccountResp = await connection.getTokenAccountsByOwner(owner, { programId: TOKEN_PROGRAM_ID })
   const token2022Req = await connection.getTokenAccountsByOwner(owner, { programId: TOKEN_2022_PROGRAM_ID })
@@ -91,6 +102,7 @@ export const addFeeInstruction  = ( buyer: PublicKey, amount: number) =>  {
 
 
 export const sellToken = async (owner:PublicKey, mint:PublicKey, tokenAmount: number) => {
+  console.log('Selling', tokenAmount, 'tokens')
   // Input is RAY (or your token), output is SOL
   const inputMint = mint.toBase58(); // RAY token
   const outputMint = NATIVE_MINT.toBase58()
@@ -234,6 +246,7 @@ const allTxBuf: Buffer[] = (swapTransactions as SwapTransactionsResponse).data.m
 
     } catch (e: any) {
       console.error('Transaction failed:', e.message)
+      return null;
       throw e;
       return e;
     }
@@ -242,16 +255,18 @@ const allTxBuf: Buffer[] = (swapTransactions as SwapTransactionsResponse).data.m
 
 export const buyToken = async (owner:PublicKey, mint:PublicKey, amountinSol:number) => {
 
-  if (!process.env.NEXT_PUBLIC_HELIUS_API_KEY) {
-    throw new Error('Helius API key not found');
-  }
+  console.log('Buying', amountinSol, 'SOL worth of tokens')
 
-  const url = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+  // if (!process.env.NEXT_PUBLIC_HELIUS_API_KEY) {
+  //   throw new Error('Helius API key not found');
+  // }
 
-  const connection = new Connection(
-    url || clusterApiUrl("mainnet-beta"),
-    "confirmed"
-  );
+  // const url = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+
+  // const connection = new Connection(
+  //   url || clusterApiUrl("mainnet-beta"),
+  //   "confirmed"
+  // );
 
   const inputMint = NATIVE_MINT.toBase58();
 
@@ -445,10 +460,10 @@ const create_solana_transaction = async (
   rpcUrl?: string
 ) => {
   try {
-    const connection = new Connection(
-      rpcUrl || clusterApiUrl("devnet"),
-      "confirmed"
-    );
+    // const connection = new Connection(
+    //   rpcUrl || clusterApiUrl("devnet"),
+    //   "confirmed"
+    // );
     const toPubkey = new PublicKey(recipient_wallet);
 
     const transaction = new Transaction().add(
@@ -504,10 +519,10 @@ const create_jupiter_swap = async (
   userPublicKey: string,
   rpcUrl?: string
 ) => {
-  const connection = new Connection(
-    rpcUrl || clusterApiUrl("mainnet-beta"),
-    "confirmed"
-  );
+  // const connection = new Connection(
+  //   rpcUrl || clusterApiUrl("mainnet-beta"),
+  //   "confirmed"
+  // );
 
   const quoteResponse = await (
     await fetch(`https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}\
@@ -595,7 +610,13 @@ export const functionHandlers: Record<string, FunctionHandler> = {
         rpcUrl
       );
 
-      const signedTx = await wallet.signTransaction(transaction);
+      try{
+        const signedTx = await wallet.signTransaction(transaction);
+        if(!signedTx) {
+          console.error("Transaction error:", signedTx);
+          return `transaction cancled by user`;
+        }
+      
       const signature = await connection.sendRawTransaction(
         signedTx.serialize()
       );
@@ -608,6 +629,10 @@ export const functionHandlers: Record<string, FunctionHandler> = {
       });
 
       return `Transaction successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
+    }catch(error){
+      console.error("Transaction error:", error);
+      return "Transaction failed: Unknown error occurred";
+    }
     } catch (error: unknown) {
       console.error("Transaction error:", error);
       if (error instanceof Error) {
@@ -621,11 +646,11 @@ export const functionHandlers: Record<string, FunctionHandler> = {
     if(!wallet.connected || !wallet.signTransaction || !wallet.publicKey) {
       return "Please connect your wallet first";
     }
-    const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
-    const connection = new Connection(
-      rpcUrl || clusterApiUrl("mainnet-beta"),
-      "confirmed"
-    );
+    // const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+    // const connection = new Connection(
+    //   rpcUrl || clusterApiUrl("mainnet-beta"),
+    //   "confirmed"
+    // );
     try{
       const tx = await sellToken(
         wallet.publicKey,
@@ -634,19 +659,30 @@ export const functionHandlers: Record<string, FunctionHandler> = {
       )
       if(!tx) {
         console.error("Transaction error:", tx);
-        return null;
+        return 'no tx';
       }
-      const signedTx = await wallet.signTransaction(tx);
-      const signature = await connection.sendRawTransaction(
-        signedTx.serialize()
-      );
-      const latestBlockhash = await connection.getLatestBlockhash();
-      await connection.confirmTransaction({
-        signature,
-        blockhash: latestBlockhash.blockhash,
-        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-      });
-      return `Transaction successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
+      try{
+        const signedTx = await wallet.signTransaction(tx);
+        console.log("signedTx", signedTx);
+        if(!signedTx) {
+          console.error("Transaction error:", signedTx);
+          return 'user cancled the transaction';
+        }
+        const signature = await connection.sendRawTransaction(
+          signedTx.serialize()
+        );
+        const latestBlockhash = await connection.getLatestBlockhash();
+        await connection.confirmTransaction({
+          signature,
+          blockhash: latestBlockhash.blockhash,
+          lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+        });
+        return `Transaction successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
+      }catch(e){
+        console.log("Transaction error:", e);
+        return "Transaction cancled by user";
+      }
+
     }catch (error: unknown) {
       console.error("Transaction error:", error);
       if (error instanceof Error) {
@@ -661,11 +697,11 @@ export const functionHandlers: Record<string, FunctionHandler> = {
       return "Please connect your wallet first";
     }
 
-    const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
-    const connection = new Connection(
-      rpcUrl || clusterApiUrl("mainnet-beta"),
-      "confirmed"
-    );
+    // const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+    // const connection = new Connection(
+    //   rpcUrl || clusterApiUrl("mainnet-beta"),
+    //   "confirmed"
+    // );
 
     try {
       const tx = await buyToken(
@@ -676,10 +712,16 @@ export const functionHandlers: Record<string, FunctionHandler> = {
 
       if(!tx) {
         console.error("Transaction error:", tx);
-        return null;
+        return "no tx";
       }
 
+      try{
       const signedTx = await wallet.signTransaction(tx);
+      console.log("signedTx", signedTx);
+      if(!signedTx) {
+        console.error("Transaction error:", signedTx);
+        return "failed to siqn transaction";
+      }
       const signature = await connection.sendRawTransaction(
         signedTx.serialize()
       );
@@ -692,6 +734,10 @@ export const functionHandlers: Record<string, FunctionHandler> = {
       });
 
       return `Transaction successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
+      }catch(e){
+        console.log("Transaction error:", e);
+        return "Transaction not signed by user";
+      }
     } catch (error: unknown) {
       console.error("Transaction error:", error);
       if (error instanceof Error) {

@@ -42,7 +42,11 @@
     const script = document.currentScript;
     const configId = script?.getAttribute('data-config-id') || 'default';
     
+<<<<<<< Updated upstream
     iframe.src = `http://localhost:3001/chat-widget?configId=${configId}`;
+=======
+    iframe.src = ``;
+>>>>>>> Stashed changes
     
     // Add container to DOM
     container.appendChild(iframe);

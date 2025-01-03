@@ -4,15 +4,23 @@ import { startChat } from "./startChat";
 // Add origin validation
 const validateOrigin = (request: NextRequest) => {
   return true;
+<<<<<<< Updated upstream
 
   const origin = request.headers.get("origin");
   // Only allow requests from our own domain
   const allowedOrigins = ["https://live24.fun/", "http://44.218.185.43/","https://api.live24.fun/","http://localhost:3001","https://api.live24.fun/app2/","*"];
+=======
+  const origin = request.headers.get("origin");
+  // Only allow requests from our own domain
+  const allowedOrigins = ["https://live24.fun/", "http://44.218.185.43/","https://api.live24.fun/","http://localhost:3000","*"];
+  // return allowedOrigins.includes(origin || "");
+>>>>>>> Stashed changes
 };
 
 export async function POST(req: NextRequest) {
   // Check if request is from our own frontend
   if (!validateOrigin(req)) {
+    // return true;
     return new Response(JSON.stringify({ message: "Forbidden" }), {
       status: 403,
     });
