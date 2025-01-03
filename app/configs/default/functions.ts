@@ -607,7 +607,7 @@ export const functionHandlers: Record<string, FunctionHandler> = {
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       });
 
-      return `Transaction successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
+      return `Transaction successful! ✅`;
     } catch (error: unknown) {
       console.error("Transaction error:", error);
       if (error instanceof Error) {
@@ -617,37 +617,45 @@ export const functionHandlers: Record<string, FunctionHandler> = {
     }
   },
 
-  sell_L24AI: async (args, wallet): Promise<string | null> => {
-    if(!wallet.connected || !wallet.signTransaction || !wallet.publicKey) {
+  sell_L24AI: async (args, wallet): Promise<string> => {
+    if (!wallet.connected || !wallet.signTransaction || !wallet.publicKey) {
       return "Please connect your wallet first";
     }
+
     const rpcUrl = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
     const connection = new Connection(
       rpcUrl || clusterApiUrl("mainnet-beta"),
       "confirmed"
     );
-    try{
+
+    try {
       const tx = await sellToken(
         wallet.publicKey,
         new PublicKey("CMDKx3TGVJryRDQ2MnAkTRNSyguQLrKgiCPZ3Jc6r8r2"),
-        args.amount,
-      )
-      if(!tx) {
-        console.error("Transaction error:", tx);
-        return null;
-      }
-      const signedTx = await wallet.signTransaction(tx);
-      const signature = await connection.sendRawTransaction(
-        signedTx.serialize()
+        args.amount
       );
+
+      if (!tx) {
+        throw new Error("Failed to create transaction");
+      }
+
+      const signedTx = await wallet.signTransaction(tx);
       const latestBlockhash = await connection.getLatestBlockhash();
+      
+      const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+        skipPreflight: true,
+        maxRetries: 3,
+        preflightCommitment: "confirmed"
+      });
+
       await connection.confirmTransaction({
         signature,
         blockhash: latestBlockhash.blockhash,
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       });
-      return `Transaction successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
-    }catch (error: unknown) {
+
+      return `Transaction successful! ✅`;
+    } catch (error: unknown) {
       console.error("Transaction error:", error);
       if (error instanceof Error) {
         return `Transaction failed: ${error.message}`;
@@ -656,7 +664,7 @@ export const functionHandlers: Record<string, FunctionHandler> = {
     }
   },
 
-  buy_L24AI: async (args, wallet): Promise<string | null> => {
+  buy_L24AI: async (args, wallet): Promise<string> => {
     if (!wallet.connected || !wallet.signTransaction || !wallet.publicKey) {
       return "Please connect your wallet first";
     }
@@ -671,27 +679,30 @@ export const functionHandlers: Record<string, FunctionHandler> = {
       const tx = await buyToken(
         wallet.publicKey,
         new PublicKey("CMDKx3TGVJryRDQ2MnAkTRNSyguQLrKgiCPZ3Jc6r8r2"),
-        args.amount,
+        args.amount
       );
 
-      if(!tx) {
-        console.error("Transaction error:", tx);
-        return null;
+      if (!tx) {
+        throw new Error("Failed to create transaction");
       }
 
       const signedTx = await wallet.signTransaction(tx);
-      const signature = await connection.sendRawTransaction(
-        signedTx.serialize()
-      );
-
       const latestBlockhash = await connection.getLatestBlockhash();
+      
+      const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+        skipPreflight: true,
+        maxRetries: 3,
+        preflightCommitment: "confirmed"
+      });
+
       await connection.confirmTransaction({
         signature,
         blockhash: latestBlockhash.blockhash,
         lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
       });
-
-      return `Transaction successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
+      
+      return `Transaction successful! ✅\n\nAmount: ${args.amount} SOL`;
+      // return `Transaction successful! ✅\n\nAmount: ${args.amount} SOL\n[View on Solscan](https://solscan.io/tx/${signature})`;
     } catch (error: unknown) {
       console.error("Transaction error:", error);
       if (error instanceof Error) {
@@ -700,88 +711,6 @@ export const functionHandlers: Record<string, FunctionHandler> = {
       return "Transaction failed: Unknown error occurred";
     }
   },
-
-
-  
-
-  // swap_tokens: async (args, wallet, rpcUrl) => {
-  //   if (!wallet.connected || !wallet.signTransaction || !wallet.publicKey) {
-  //     return "Please connect your wallet first";
-  //   }
-
-  //   try {
-  //     const [inputTokenInfo, outputTokenInfo] = await Promise.all([
-  //       checkMatch(args.inputToken),
-  //       checkMatch(args.outputToken),
-  //     ]);
-
-  //     // const [inputTokenInfo, outputTokenInfo] = ["CMDKx3TGVJryRDQ2MnAkTRNSyguQLrKgiCPZ3Jc6r8r2",""];
-  //     // function checkMatch(input) {
-  //     //   // Define the regex patterns
-  //     //   const solRegex = /\b(sol|SOL|solana)\b/; // Matches 'sol', 'SOL', or 'solana' (case-sensitive, as requested)
-  //     //   const l24Regex = /\b(l24|L24 Ai)\b/i;   // Matches 'l24' or 'L24 Ai' (case-insensitive)
-      
-  //     //   // Check for matches and return accordingly
-  //     //   if (solRegex.test(input)) {
-  //     //     return 'X';
-  //     //   } else if (l24Regex.test(input)) {
-  //     //     return 'Y';
-  //     //   }
-      
-  //     //   // Return null or a default value if no matches
-  //     //   return null;
-  //     // }
-
-  //     if (args.amount <= 0) {
-  //       throw new Error("Amount must be greater than 0");
-  //     }
-  //     if (args.amount > 1000000) {
-  //       throw new Error("Amount too large");
-  //     }
-
-  //     const inputDecimals = inputTokenInfo.decimals;
-  //     const amountWithDecimals = Math.round(
-  //       args.amount * Math.pow(10, inputDecimals)
-  //     );
-
-  //     const { transaction } = await create_jupiter_swap(
-  //       inputTokenInfo.address,
-  //       outputTokenInfo.address,
-  //       amountWithDecimals,
-  //       args.slippageBps,
-  //       wallet.publicKey.toString(),
-  //       rpcUrl
-  //     );
-
-  //     const connection = new Connection(
-  //       rpcUrl || clusterApiUrl("mainnet-beta"),
-  //       "confirmed"
-  //     );
-  //     const signedTx = await wallet.signTransaction(transaction);
-  //     const signature = await connection.sendRawTransaction(
-  //       signedTx.serialize(),
-  //       {
-  //         skipPreflight: true,
-  //         maxRetries: 2,
-  //       }
-  //     );
-
-  //     const latestBlockhash = await connection.getLatestBlockhash();
-  //     await connection.confirmTransaction({
-  //       signature,
-  //       blockhash: latestBlockhash.blockhash,
-  //       lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-  //     });
-
-  //     return `Swap successful! ✅\n\n[**View on Solscan**](https://solscan.io/tx/${signature})`;
-  //   } catch (error: unknown) {
-  //     console.error("Swap error:", error);
-  //     if (error instanceof Error) {
-  //       return `Swap failed: ${error.message}`;
-  //     }
-  //     return "Swap failed: Unknown error occurred";
-  //   }
-  // },
 
   get_portfolio_balance: async (args, wallet) => {
     try {

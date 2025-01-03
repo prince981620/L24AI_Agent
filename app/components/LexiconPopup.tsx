@@ -132,7 +132,7 @@ const LexiconPopup: React.FC<
         <div className="flex items-center gap-2">
           <div className="relative">
             <img
-              src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
+              src="https://res.cloudinary.com/dd37i7jgq/image/upload/v1735930729/dmx5m9q9u45vhjoghxgb.png"
               alt="Lexicon AI"
               className="h-7 w-7 rounded-full ring-2 ring-white/20"
             />
@@ -178,7 +178,7 @@ const LexiconPopup: React.FC<
         {/* Welcome Message - Now always visible */}
         <div className="flex items-start gap-3 animate-fade-in">
           <img
-            src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
+            src="https://res.cloudinary.com/dd37i7jgq/image/upload/v1735930729/dmx5m9q9u45vhjoghxgb.png"
             alt="L24AI Agent"
             className="h-8 w-8 rounded-full ring-2 ring-white/20"
           />
@@ -202,7 +202,7 @@ const LexiconPopup: React.FC<
           >
             {message.role === "assistant" && (
               <img
-                src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
+                src="https://res.cloudinary.com/dd37i7jgq/image/upload/v1735930729/dmx5m9q9u45vhjoghxgb.png"
                 alt="L24AI Agent"
                 className="h-8 w-8 rounded-full ring-2 ring-white/20"
               />
@@ -233,7 +233,7 @@ const LexiconPopup: React.FC<
         {isGenerating && (
           <div className="flex items-start gap-3">
             <img
-              src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
+              src="https://res.cloudinary.com/dd37i7jgq/image/upload/v1735930729/dmx5m9q9u45vhjoghxgb.png"
               alt="L24AI Agent"
               className="h-8 w-8 rounded-full ring-2 ring-white/20"
             />
@@ -251,7 +251,7 @@ const LexiconPopup: React.FC<
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !isGenerating && startChat()}
+            // onKeyDown={(e) => e.key === "Enter" && !isGenerating && startChat()}
             disabled={isGenerating}
             className="flex-1 px-4 py-2 bg-[#1a1a1a] text-sm text-white rounded-xl border border-gray-800 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/10 placeholder-gray-500 transition-all duration-200"
             placeholder={
@@ -293,7 +293,7 @@ const LexiconPopup: React.FC<
             </span>
             <div className="flex items-center gap-1.5">
               <img
-                src="https://ipfs.io/ipfs/QmSSdSBDPYLXuBnMD9BNi4jr9WvEN6NCpgRnFYn79zRrRD"
+                src="https://res.cloudinary.com/dd37i7jgq/image/upload/v1735930729/dmx5m9q9u45vhjoghxgb.png"
                 alt="Lexicon"
                 className="w-3 h-3 rounded-full"
               />

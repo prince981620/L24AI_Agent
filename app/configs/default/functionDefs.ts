@@ -23,16 +23,20 @@ export const tools = [
   },
   {
     name: "sell_L24AI",
-    description: "sell L24AI to get solana(SOL) using Radium Pool on Solana.",
+    description: "Sells L24AI tokens for SOL with transaction confirmation and status tracking.",
     strict: true,
     parameters: {
       type: "object",
-      required: [ "amount"],
+      required: ["amount"],
       properties: {
         amount: {
           type: "number",
-          description:
-            "The amount of input tokens in human-readable form (e.g., 1000 L24AI, not in decimals)",
+          description: "The amount of L24AI tokens to sell",
+        },
+        slippageBps: {
+          type: "number",
+          description: "Slippage tolerance in basis points (1 = 0.01%)",
+          default: 50
         }
       },
       additionalProperties: false,
@@ -40,16 +44,20 @@ export const tools = [
   },
   {
     name: "buy_L24AI",
-    description: "buy L24AI spending solana(SOL) using Radium Pool on Solana.",
+    description: "Buys L24AI tokens with SOL including transaction confirmation and status tracking.",
     strict: true,
     parameters: {
       type: "object",
-      required: [ "amount"],
+      required: ["amount"],
       properties: {
         amount: {
           type: "number",
-          description:
-            "The amount of input tokens in human-readable form (e.g., 0.5 SOL, not in lamports)",
+          description: "The amount of SOL to spend",
+        },
+        slippageBps: {
+          type: "number",
+          description: "Slippage tolerance in basis points (1 = 0.01%)",
+          default: 50
         }
       },
       additionalProperties: false,
