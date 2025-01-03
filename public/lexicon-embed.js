@@ -70,7 +70,7 @@
     // Improved resize handling with debouncing
     let resizeTimeout;
     window.addEventListener('message', (event) => {
-      if (event.origin !== 'http://localhost:3001') return;
+      // if (event.origin !== 'http://localhost:3001') return;
       
       if (event.data.type === 'resize') {
         clearTimeout(resizeTimeout);
