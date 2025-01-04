@@ -1,90 +1,112 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import dynamic from "next/dynamic";
-import { ChatComponentProps } from "../types/types";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useState, useEffect } from "react";
 
-const LexiconPopup = dynamic(() => import("./LexiconPopup"), { ssr: false });
-
-interface LexiconButtonProps extends ChatComponentProps {
-  buttonClassName?: string;
-}
-
-const LexiconButton: React.FC<LexiconButtonProps> = ({
-  configId = "default",
-  buttonClassName,
-}) => {
-  const [isOpen, setIsOpen] = useState(true); // Default to open
+const WalletConnectButton: React.FC = () => {
   const [mounted, setMounted] = useState(false);
+  const [showWalletList, setShowWalletList] = useState(false);
+  const { publicKey, disconnect, wallets, select } = useWallet();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleResize = useCallback(() => {
-    if (window.parent !== window) {
-      const size = isOpen
-        ? { width: 380, height: 680 }
-        : { width: 220, height: 35 };
-      window.parent.postMessage(
-        {
-          type: "resize",
-          ...size,
-        },
-        "*"
-      );
-    }
-  }, [isOpen]);
+  if (!mounted) {
+    return null;
+  }
 
-  useEffect(() => {
-    handleResize();
+  const toggleWalletList = () => setShowWalletList((prev) => !prev);
 
-    // Handle escape key to close popup
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        setIsOpen(false);
-      }
-    };
+  // Function to truncate wallet address
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
 
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isOpen, handleResize]);
-
-  if (!mounted) return null;
+  // If wallet is connected, show address and disconnect button
+  if (publicKey) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-bold text-green-500/80 cursor-pointer" onClick={disconnect}
+        >
+          {formatAddress(publicKey.toBase58())}
+        </span>
+        {/* <button
+          onClick={disconnect}
+          className="wallet-adapter-button-trigger !bg-gradient-to-r from-[#1e1e1e] to-[#1a1a1a] hover:from-[#2a2a2a] hover:to-[#222222] !text-white/90 !border !border-gray-800/50 !rounded-xl !py-2.5 !px-4 !h-auto !text-sm font-medium transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+        >
+          Disconnect
+        </button> */}
+      </div>
+    );
+  }
 
   return (
-    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-      <div className="inline-flex bg-transparent">
-        {!isOpen ? (
-          <button
-            onClick={() => setIsOpen(true)}
-            className={`
-            flex items-center justify-center gap-2 
-            w-[320px] h-[100px] 
-            bg-black hover:bg-gray-900
-            border border-white/30 hover:border-white/50
-            text-white
-            rounded-lg
-            transition-all duration-200
-            shadow-lg hover:shadow-xl
-            focus:outline-none focus:ring-2 focus:ring-white/20
-            ${buttonClassName}
-          `}
-            aria-label="Open chat with Lexicon AI"
-          >
-         
-            <span className="text-md ">Chat with L24 AGENT</span>
-          </button>
-        ) : (
-          <LexiconPopup
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
-            configId={configId}
+    <div className="relative">
+      <button
+        onClick={toggleWalletList}
+        className="wallet-adapter-button-trigger !bg-gradient-to-r from-[#1e1e1e] to-[#1a1a1a] hover:from-[#2a2a2a] hover:to-[#222222] !text-white/90 !border !border-gray-800/50 !rounded-xl !py-2.5 !px-4 !h-auto !text-sm font-medium transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+      >
+        Connect Wallet
+      </button>
+      
+      {showWalletList && (
+        <div className="absolute top-full mt-2 right-0 bg-[#1a1a1a] rounded-xl border border-gray-800/50 p-4 min-w-[240px] shadow-xl">
+          <WalletList 
+            wallets={wallets} 
+            select={select} 
+            onClose={() => setShowWalletList(false)} 
           />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default LexiconButton;
+interface WalletListProps {
+  wallets: ReturnType<typeof useWallet>["wallets"];
+  select: (walletName: string) => void;
+  onClose: () => void;
+}
+
+function WalletList({ wallets, select, onClose }: WalletListProps) {
+  const installedWallets = wallets.filter(
+    (wallet) => wallet.readyState === "Installed"
+  );
+
+  const handleWalletSelect = (walletName: string) => {
+    select(walletName);
+    onClose();
+  };
+
+  return (
+    <div className="space-y-2">
+      {installedWallets.length === 0 ? (
+        <div className="text-white/90 text-sm p-2">
+          Please install a compatible Solana wallet to continue.
+        </div>
+      ) : (
+        installedWallets
+          .filter((wallet) => wallet.adapter.name !== "Phantom")
+          .map((wallet) => (
+            <div
+              key={wallet.adapter.name}
+              onClick={() => handleWalletSelect(wallet.adapter.name)}
+              className="flex items-center gap-2 p-2 hover:bg-gray-800/50 rounded-lg cursor-pointer transition-colors"
+            >
+              {wallet.adapter.icon && (
+                <img
+                  src={wallet.adapter.icon}
+                  alt={`${wallet.adapter.name} logo`}
+                  className="w-6 h-6"
+                />
+              )}
+              <span className="text-white/90">{wallet.adapter.name}</span>
+            </div>
+          ))
+      )}
+    </div>
+  );
+}
+
+export default WalletConnectButton;
